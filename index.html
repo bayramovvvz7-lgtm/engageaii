@@ -1,0 +1,725 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+
+<title>EngageAI</title>      
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&display=swap">      
+<style>      
+:root {      
+  --bg: #0d0b14;      
+  --surface: #161221;      
+  --surface-2: #1d1830;      
+  --line: #2b2542;      
+  --fg: #eeeaf8;      
+  --muted: #a29bbb;      
+  --accent: #7c3aed;      
+  --accent-soft: #b79cff;      
+  --accent-wash: rgba(124, 58, 237, 0.16);      
+  --ok: #6ee7a8;      
+  --bad: #ff8a8a;      
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;      
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;      
+  color-scheme: dark;      
+}      
+* { box-sizing: border-box; }      
+html { -webkit-text-size-adjust: 100%; }      
+body {      
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55; margin: 0;      
+  padding-block: 20px 104px;      
+  padding-left: max(16px, env(safe-area-inset-left, 0px));      
+  padding-right: max(16px, env(safe-area-inset-right, 0px));      
+}      
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 26px; min-width: 0; }      
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }      
+.header-left { display: flex; align-items: center; gap: 12px; }      
+.mark { width: 40px; height: 40px; border-radius: 12px; background: var(--accent-wash); border: 1px solid var(--line); display: grid; place-items: center; flex: none; }      
+h1 { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.01em; margin: 0; line-height: 1.1; }      
+.tag { margin: 2px 0 0; color: var(--muted); font-size: 13px; }      
+h2 { font-family: var(--font-display); font-weight: 500; font-size: 18px; margin: 0; letter-spacing: -0.005em; text-wrap: balance; }      
+h3 { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 0; }      
+p { margin: 0; }      
+.step { display: flex; flex-direction: column; gap: 12px; min-width: 0; }      
+.step-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }      
+.sub { color: var(--muted); font-size: 13px; }      
+.field { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 4px; }      
+.field:focus-within, input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-wash); outline: 0; }      
+textarea { display: block; width: 100%; min-height: 200px; resize: vertical; background: transparent; color: var(--fg); border: 0; outline: 0; padding: 12px; font: inherit; font-size: 16px; line-height: 1.55; }      
+textarea.short { min-height: 140px; }      
+textarea::placeholder, input::placeholder { color: #7d7696; }      
+.field-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px 8px 12px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }      
+.link { background: none; border: 0; color: var(--accent-soft); font: inherit; font-size: 13px; font-weight: 500; padding: 8px; margin: -8px; cursor: pointer; border-radius: 8px; }      
+.link.bad { color: var(--bad); }      
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }      
+.pill { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-weight: 500; cursor: pointer; }      
+.pill[aria-checked="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }      
+.tones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }      
+@media (min-width: 560px) { .tones { grid-template-columns: repeat(3, minmax(0, 1fr)); } }      
+.tone { text-align: left; min-height: 64px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 2px; min-width: 0; }      
+.tone b { font-weight: 600; font-size: 15px; }      
+.tone span { color: var(--muted); font-size: 12px; line-height: 1.35; }      
+.tone[aria-checked="true"] { border-color: var(--accent); background: var(--accent-wash); }      
+.tone[aria-checked="true"] b { color: var(--accent-soft); }      
+button:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }      
+.go { width: 100%; min-height: 54px; border-radius: 16px; border: 0; background: var(--accent); color: #fff; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; }      
+.go:disabled { opacity: 0.45; cursor: not-allowed; }      
+.go.stop, .go.ghost { background: var(--surface-2); border: 1px solid var(--line); color: var(--fg); }      
+.btn { min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); font: inherit; font-weight: 600; font-size: 14px; cursor: pointer; }      
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }      
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }      
+.btn.done { border-color: var(--ok); color: var(--ok); }      
+.btn.danger { border-color: rgba(255,138,138,.5); color: var(--bad); }      
+.msg { border-radius: 12px; padding: 12px 14px; font-size: 14px; border: 1px solid var(--line); background: var(--surface); }      
+.msg.error { border-color: rgba(255, 138, 138, 0.45); color: var(--bad); }      
+.msg.info { color: var(--muted); }      
+.results { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }      
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }      
+.card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }      
+.card-label { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--accent-soft); }      
+.card-hint { color: var(--muted); font-size: 12.5px; }      
+.score-chip { flex: none; text-align: right; font-variant-numeric: tabular-nums; }      
+.score-chip b { display: block; font-family: var(--font-display); font-size: 20px; line-height: 1; }      
+.score-chip span { color: var(--muted); font-size: 11px; }      
+.card-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15.5px; line-height: 1.6; user-select: text; -webkit-user-select: text; }      
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }      
+.actions .btn { flex: 1 1 96px; }      
+.words { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }      
+details { border-top: 1px solid var(--line); padding-top: 10px; }      
+summary { cursor: pointer; font-weight: 600; font-size: 14px; min-height: 32px; display: flex; align-items: center; color: var(--fg); }      
+dl { margin: 8px 0 0; display: flex; flex-direction: column; gap: 10px; }      
+dt { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }      
+dd { margin: 2px 0 0; font-size: 14px; overflow-wrap: anywhere; }      
+.bars { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }      
+.bar { display: grid; grid-template-columns: 112px minmax(0, 1fr) 24px; align-items: center; gap: 10px; font-size: 13px; }      
+.bar .track { height: 6px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }      
+.bar .fill { height: 100%; background: var(--accent-soft); border-radius: 99px; }      
+.bar em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }      
+.skel { display: flex; flex-direction: column; gap: 9px; }      
+.skel i { display: block; height: 11px; border-radius: 6px; background: linear-gradient(90deg, var(--surface-2), #2a2342, var(--surface-2)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }      
+.skel i:nth-child(1) { width: 96%; } .skel i:nth-child(2) { width: 88%; } .skel i:nth-child(3) { width: 62%; }      
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }      
+.caret { display: inline-block; width: 7px; height: 1em; background: var(--accent-soft); vertical-align: text-bottom; margin-left: 2px; animation: blink 1s steps(2) infinite; }      
+@keyframes blink { 50% { opacity: 0; } }      
+.spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff; animation: spin 0.8s linear infinite; }      
+@keyframes spin { to { transform: rotate(360deg); } }      
+@media (prefers-reduced-motion: reduce) { .skel i, .caret, .spin { animation: none; } }      
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }      
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; min-width: 0; }      
+.stat b { display: block; font-family: var(--font-display); font-size: 26px; line-height: 1.1; font-variant-numeric: tabular-nums; }      
+.stat span { color: var(--muted); font-size: 12px; }      
+.stats.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }      
+.meter { height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }      
+.meter i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }      
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }      
+.chip { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 99px; background: var(--accent-wash); color: var(--accent-soft); }      
+.nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: rgba(22, 18, 33, 0.97); border-top: 1px solid var(--line); padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }      
+.nav-in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }      
+.nav button { min-height: 52px; background: none; border: 0; border-radius: 12px; color: var(--muted); font: inherit; font-size: 11px; font-weight: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; }      
+.nav button[aria-current="page"] { color: var(--accent-soft); background: var(--accent-wash); }      
+.plans { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }      
+@media (min-width: 560px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } }      
+.plan { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }      
+.plan.current { border-color: var(--accent); }      
+.price { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1; }      
+.price small { font-size: 13px; color: var(--muted); font-family: var(--font-body); font-weight: 400; }      
+.plan ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }      
+.plan li { padding-left: 20px; position: relative; }      
+.plan li::before { content: ""; position: absolute; left: 3px; top: 8px; width: 8px; height: 5px; border-left: 2px solid var(--accent-soft); border-bottom: 2px solid var(--accent-soft); transform: rotate(-45deg); }      
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }      
+.src { color: var(--muted); font-size: 12.5px; overflow-wrap: anywhere; }      
+.perf { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }      
+.perf label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }      
+input[type="number"], input[type="text"], input[type="password"], select { width: 100%; min-height: 44px; padding: 0 12px; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; font: inherit; font-size: 16px; }      
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }      
+.check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; }      
+.check input { width: 20px; height: 20px; accent-color: var(--accent); }      
+.empty { border: 1px dashed var(--line); border-radius: 16px; padding: 20px 16px; color: var(--muted); font-size: 14px; }      
+/* Modal Dialog Styling */      
+.modal-backdrop { position: fixed; inset: 0; background: rgba(13, 11, 20, 0.85); z-index: 100; display: grid; place-items: center; padding: 16px; backdrop-filter: blur(4px); }      
+.modal { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; width: 100%; max-width: 480px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }      
+.icon-btn { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; width: 40px; height: 40px; color: var(--fg); display: grid; place-items: center; cursor: pointer; }      
+</style>      
+<div id="root"></div>      
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>      
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>      
+<script>      
+(function () {      
+  var h = React.createElement;      
+  var useState = React.useState, useEffect = React.useEffect, useRef = React.useRef;  var LANGS = ["English", "Azerbaijani", "Turkish", "Russian", "Spanish", "French", "German"];    
+var TONES = [    
+{ id: "Intellectual", note: "Ideas first, precise" },    
+{ id: "Friendly", note: "Warm, like a note to a friend" },    
+{ id: "Professional", note: "Clear, credible, polished" },    
+{ id: "Casual", note: "Relaxed and conversational" },    
+{ id: "Provocative", note: "Challenges a common belief" },    
+{ id: "Storytelling", note: "Scene first, then the point" }    
+];    
+var STRATS = [    
+{ id: "hook", label: "Viral Hook", hint: "Earns the first line, then keeps readers going.",    
+brief: "Viral Hook: an opening that earns attention in the first line and makes people keep reading. Specific and honest, never misleading clickbait. Conversation goal: readers respond to the claim in the opening." },    
+{ id: "controversial", label: "Controversial", hint: "Challenges an assumption to start a thoughtful debate.",    
+brief: "Controversial: challenge a common assumption or surface an opposing perspective that the draft's own ideas support, to prompt thoughtful debate. No manufactured outrage and no strawmen. Conversation goal: readers weigh in with considered agreement or disagreement." },    
+{ id: "emotional", label: "Emotional", hint: "Invites readers to share experiences of their own.",    
+brief: "Emotional: build a personal connection and invite readers to share meaningful experiences of their own. Never invent the author's experiences; use short [bracketed placeholders] where the author must add real details. Conversation goal: readers tell their own stories." },    
+{ id: "curiosity", label: "Curiosity-driven", hint: "Opens an information gap readers want to close.",    
+brief: "Curiosity-driven: open an information gap or a surprising question that the full post resolves. Conversation goal: readers want to find out, and reply with their own guesses." },    
+{ id: "community", label: "Community-building", hint: "Gets readers talking to each other.",    
+brief: "Community-building: invite readers to exchange experiences and learn from one another, with the author acting as host rather than lecturer. Conversation goal: readers talk to each other in the comments." }    
+];    
+var SCORES = [    
+{ k: "attention", l: "Attention" }, { k: "curiosity", l: "Curiosity" }, { k: "emotion", l: "Emotional pull" },    
+{ k: "discussion", l: "Discussion" }, { k: "share", l: "Shareability" }    
+];    
+var NOTES = [["strategy", "Engagement strategy"], ["why", "Why the opening works"], ["response", "Response it encourages"], ["audience", "Target audience"], ["use", "Best use"]];    
+var VIEWS = [    
+{ id: "home", label: "Home", d: "M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" },    
+{ id: "create", label: "Create", d: "M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" },    
+{ id: "history", label: "History", d: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM12 7v5l3 2" },    
+{ id: "style", label: "Style", d: "M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5zM16 8L2 22M17.5 15H9" },    
+{ id: "account", label: "Account", d: "M3 6h18v12H3zM3 10h18" }    
+];    
+var FREE_DAILY = 3;    
+var EXAMPLE = "Most newsletters die in the third month, not the first. The first month runs on friends and novelty. By month three the replies slow down, the open rate settles, and you find out whether anyone actually wants to hear from you. I kept going by shrinking the job: one idea per issue, written in an hour, sent on the same day every week. It stopped feeling like a performance and started feeling like a habit.";  function lsGet(k, d) { try { var v = localStorage.getItem("engageai." + k); return v == null ? d : v; } catch (e) { return d; } }  
+function lsSet(k, v) { try { localStorage.setItem("engageai." + k, v); } catch (e) {} }  
+function lsClear() { try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf("engageai.") === 0) localStorage.removeItem(k); }); } catch (e) {} }  
+function today() { return new Date().toLocaleDateString("en-CA"); }  
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }  
+function words(t) { var m = (t || "").trim().match(/\S+/g); return m ? m.length : 0; }  
+function num(v) { var n = parseInt(v, 10); return isFinite(n) && n >= 0 ? n : 0; }  function defaultStore() {
+var lang = lsGet("lang", "English"), tone = lsGet("tone", "Friendly");
+return {
+settings: { lang: LANGS.indexOf(lang) >= 0 ? lang : "English", tone: TONES.some(function (t) { return t.id === tone; }) ? tone : "Friendly", useStyle: true },
+style: { samples: "", avoid: "", profile: null },
+saved: [],
+counters: { generations: 0, copies: 0, byDay: {} }
+};
+}
+function loadStore() {
+var d = defaultStore();
+try {
+var raw = lsGet("v2", null);
+if (!raw) return d;
+var s = JSON.parse(raw);
+return {
+settings: Object.assign(d.settings, s.settings || {}),
+style: Object.assign(d.style, s.style || {}),
+saved: Array.isArray(s.saved) ? s.saved : [],
+counters: Object.assign(d.counters, s.counters || {})
+};
+} catch (e) { return d; }
+}
+
+function unescapePartial(s) {
+try { return JSON.parse('"' + s.replace(/$/, "") + '"'); }
+catch (e) { return s.replace(/\n/g, "\n").replace(/"/g, '"').replace(//g, ""); }
+}
+function normType(t) {
+t = String(t || "").toLowerCase();
+for (var i = 0; i < STRATS.length; i++) if (t === STRATS[i].id || t.indexOf(STRATS[i].id) === 0) return STRATS[i].id;
+if (t.indexOf("viral") === 0) return "hook";
+return null;
+}
+function cleanScores(s) {
+var out = {};
+SCORES.forEach(function (x) { var v = Number(s && s[x.k]); out[x.k] = isFinite(v) ? Math.max(1, Math.min(10, Math.round(v))) : null; });
+return out;
+}
+
+function parseGeminiResponse(textStr) {
+var res = { analysis: null, vars: {} };
+var cleaned = textStr.replace(/json/gi, "").replace(//g, "").trim();
+
+try {
+var parsed = JSON.parse(cleaned);
+if (Array.isArray(parsed)) {
+parsed.forEach(function(item) {
+if (!item) return;
+if (item.type === "analysis") { res.analysis = item; return; }
+var id = normType(item.type);
+if (id) {
+item.type = id;
+item.scores = cleanScores(item.scores);
+item.done = true;
+res.vars[id] = item;
+}
+});
+return res;
+} else if (parsed && typeof parsed === 'object') {
+if (parsed.analysis) res.analysis = parsed.analysis;
+['hook', 'controversial', 'emotional', 'curiosity', 'community'].forEach(function(k) {
+if (parsed[k]) {
+var item = parsed[k];
+item.type = k;
+item.scores = cleanScores(item.scores);
+item.done = true;
+res.vars[k] = item;
+}
+});
+if (Object.keys(res.vars).length > 0) return res;
+}
+} catch(e) {}
+
+cleaned.split("\n").forEach(function (ln) {
+ln = ln.trim();
+if (!ln) return;
+var obj = null;
+try { obj = JSON.parse(ln); } catch (e) {}
+if (obj && obj.type === "analysis") { res.analysis = obj; return; }
+var id = obj ? normType(obj.type) : null;
+if (obj && id && typeof obj.text === "string") { obj.scores = cleanScores(obj.scores); obj.done = true; res.vars[id] = obj; return; }
+});
+return res;
+
+}
+
+function overall(sc) {
+var v = SCORES.map(function (x) { return sc && sc[x.k]; }).filter(function (n) { return n != null; });
+return v.length ? (v.reduce(function (a, b) { return a + b; }, 0) / v.length).toFixed(1) : null;
+}
+function errorCopy(code) {
+switch (code) {
+case "invalid_key": return "Your Gemini API key is missing or invalid. Check Settings.";
+case "rate_limited": return "You've hit Gemini rate limits. Wait a moment and try again.";
+case "network_error": return "Network connection error. Check your internet connection.";
+case "invalid_json": return "The model reply wasn't in the expected format. Try generating again.";
+default: return "Something went wrong while communicating with Gemini. Try again.";
+}
+}
+function copyText(t) {
+return new Promise(function (resolve, reject) {
+function fb() {
+try {
+var ta = document.createElement("textarea");
+ta.value = t; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0"; ta.style.top = "0";
+document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+var ok = document.execCommand("copy"); document.body.removeChild(ta); ok ? resolve() : reject();
+} catch (e) { reject(e); }
+}
+if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(resolve, fb); else fb();
+});
+}
+function icon(d) {
+return h("svg", { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true" }, h("path", { d: d }));
+}
+
+function CopyButton(props) {
+var s = useState("idle"), st = s[0], setSt = s[1];
+return h("button", { type: "button", className: "btn" + (st === "done" ? " done" : ""), disabled: props.disabled, "aria-label": props.label,
+onClick: function () {
+copyText(props.text).then(function () { setSt("done"); props.onCopied && props.onCopied(); setTimeout(function () { setSt("idle"); }, 1800); },
+function () { setSt("fail"); props.onFail && props.onFail(); });
+} }, st === "done" ? "Copied" : st === "fail" ? "Select text, then copy" : "Copy");
+}
+
+function VariationCard(props) {
+var meta = props.meta, v = props.v, running = props.running, busy = props.busy;
+var ov = v && v.done ? overall(v.scores) : null;
+var hasText = v && v.text;
+return h("article", { className: "card", "aria-label": meta.label },
+h("div", { className: "card-head" },
+h("div", null, h("div", { className: "card-label" }, meta.label), h("div", { className: "card-hint" }, meta.hint)),
+ov ? h("div", { className: "score-chip" }, h("b", null, ov), h("span", null, "AI estimate")) : null),
+(hasText && !busy)
+? h("p", { className: "card-body" }, v.text, (!v.done && running) ? h("span", { className: "caret", "aria-hidden": "true" }) : null)
+: (running || busy)
+? h("div", { className: "skel", "aria-hidden": "true" }, h("i"), h("i"), h("i"))
+: h("p", { className: "card-body sub" }, "This variation didn't come through. Press Generate again or Regenerate."),
+hasText && v.done ? h("details", null,
+h("summary", null, "Why it works"),
+h("dl", null, NOTES.map(function (n) { return v[n[0]] ? h("div", { key: n[0] }, h("dt", null, n[1]), h("dd", null, String(v[n[0]]))) : null; })),
+h("div", { className: "bars" }, SCORES.map(function (x) {
+var val = v.scores[x.k];
+return h("div", { className: "bar", key: x.k }, h("span", null, x.l), h("div", { className: "track" }, h("div", { className: "fill", style: { width: (val ? val * 10 : 0) + "%" } })), h("em", null, val == null ? "–" : val));
+})),
+h("p", { className: "sub", style: { marginTop: 8 } }, "Scores out of 10 are AI estimates, not guaranteed results.")
+) : null,
+h("div", { className: "actions" },
+h(CopyButton, { text: hasText ? v.text : "", disabled: !(hasText && v.done) || busy, label: "Copy " + meta.label + " variation", onCopied: props.onCopied }),
+h("button", { type: "button", className: "btn", disabled: !(hasText && v.done) || busy || props.saved, onClick: props.onSave }, props.saved ? "Saved" : "Save"),
+h("button", { type: "button", className: "btn", disabled: running || busy || !props.canRegen, onClick: props.onRegen }, busy ? "Working…" : "Regenerate")
+),
+hasText && v.done ? h("span", { className: "words" }, words(v.text) + " words") : null
+);
+}
+
+function SettingsModal(props) {
+var apiKeyVal = useState(lsGet("gemini_api_key", "")), keyInput = apiKeyVal[0], setKeyInput = apiKeyVal[1];
+return h("div", { className: "modal-backdrop" },
+h("div", { className: "modal" },
+h("div", { className: "row" },
+h("h3", null, "Gemini API Settings"),
+h("button", { type: "button", className: "icon-btn", onClick: props.onClose, "aria-label": "Close" }, "✕")
+),
+h("p", { className: "sub" }, "EngageAI connects directly to Gemini using your own API key. Your key is stored securely in your browser's local storage and never sent anywhere else."),
+h("div", { className: "step" },
+h("label", { className: "sub" }, "Gemini API Key"),
+h("input", { type: "password", placeholder: "AIzaSy...", value: keyInput, onChange: function(e) { setKeyInput(e.target.value); } }),
+h("p", { className: "sub" }, "You can get a free API key from Google AI Studio.")
+),
+h("div", { className: "actions" },
+h("button", { type: "button", className: "btn primary", onClick: function() {
+lsSet("gemini_api_key", keyInput.trim());
+props.onSave();
+}}, "Save & Continue"),
+h("button", { type: "button", className: "btn", onClick: props.onClose }, "Cancel")
+)
+)
+);
+}
+
+function App() {
+var A = useState(function () { return loadStore(); }), store = A[0], setStore = A[1];
+var B = useState(function () { return lsGet("draft", ""); }), text = B[0], setText = B[1];
+var C = useState(function () { var x = (location.hash || "").slice(1); return VIEWS.some(function (v) { return v.id === x; }) ? x : "home"; }), view = C[0], setView = C[1];
+var D = useState(true), avail = D[0], setAvail = D[1];
+var E = useState("idle"), status = E[0], setStatus = E[1];
+var F = useState({ analysis: null, vars: {} }), out = F[0], setOut = F[1];
+var G = useState(null), msg = G[0], setMsg = G[1];
+var H = useState({}), regen = H[0], setRegen = H[1];
+var I = useState(null), lastInput = I[0], setLastInput = I[1];
+var J = useState({}), perfOpen = J[0], setPerfOpen = J[1];
+var K = useState(false), confirmDel = K[0], setConfirmDel = K[1];
+var L = useState(false), canDownload = L[0], setCanDownload = L[1];
+var M = useState(false), building = M[0], setBuilding = M[1];
+var N = useState(null), styleMsg = N[0], setStyleMsg = N[1];
+var O = useState(null), acctMsg = O[0], setAcctMsg = O[1];
+var P = useState(false), showSettingsModal = P[0], setShowSettingsModal = P[1];
+var ctlRef = useRef(null), resRef = useRef(null);
+
+useEffect(function () {
+setCanDownload(true);
+function onHash() { var x = (location.hash || "").slice(1); if (VIEWS.some(function (v) { return v.id === x; })) setView(x); }
+window.addEventListener("hashchange", onHash);
+return function () { window.removeEventListener("hashchange", onHash); };
+}, []);
+useEffect(function () { lsSet("v2", JSON.stringify(store)); }, [store]);
+useEffect(function () { lsSet("draft", text); }, [text]);
+
+function go(id) { setView(id); try { location.hash = id; } catch (e) {} window.scrollTo(0, 0); }
+function upd(fn) { setStore(function (s) { return fn(JSON.parse(JSON.stringify(s))); }); }
+var lang = store.settings.lang, tone = store.settings.tone;
+var running = status === "thinking" || status === "writing";
+var usedToday = (store.counters.byDay || {})[today()] || 0;
+var hasStyle = !!(store.style.profile || (store.style.samples && store.style.samples.trim().length > 80));
+
+function styleBlock() {
+if (!store.settings.useStyle || !hasStyle) return "";
+var s = store.style, b = "\n\nAuthor voice. Match this author's own voice (sentence rhythm, vocabulary, level of formality). Do not imitate any other writer.\n";
+if (s.profile) b += "Voice profile: " + s.profile.summary + " Traits: " + (s.profile.traits || []).join("; ") + ".\n";
+else b += "Writing samples by the author:\n"""\n" + s.samples.slice(0, 3000) + "\n"""\n";
+var avoid = [].concat(s.avoid ? [s.avoid] : [], s.profile && s.profile.avoid ? s.profile.avoid : []).join(", ");
+if (avoid) b += "Never use these words or phrases: " + avoid + ".\n";
+return b;
+}
+var VARIANT_SPEC = "Each variation object has these keys: \"type\" (one of hook, controversial, emotional, curiosity, community), \"text\", \"strategy\" (one sentence naming the engagement approach), \"why\" (one or two sentences explaining why the opening works), \"response\" (what kind of reply it encourages), \"audience\" (who it suits best), \"use\" (where to use it), \"scores\" (an object with integer 1-10 estimates for attention, curiosity, emotion, discussion, share). Write analysis, strategy, why, response, audience, use in English; write text in the output language.";
+var RULES = "Each variation's \"text\" is a standalone piece of 70 to 150 words that the writer can publish as a Substack Note or use as an intro. Keep the draft's core idea and every fact in it. Never invent statistics, quotes, events or personal experiences; where a real personal detail is needed, leave a short bracketed placeholder written in the output language. End each with a natural invitation to respond. No engagement bait such as 'like and share', no hashtags, no repetitive questions, at most one emoji and only if the tone suits. Avoid generic AI phrasing. The five variations must use genuinely different psychological approaches.";
+
+async function callGemini(promptText) {
+var apiKey = lsGet("gemini_api_key", "");
+if (!apiKey) {
+setShowSettingsModal(true);
+throw { code: "invalid_key" };
+}
+var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+var body = {
+contents: [{ parts: [{ text: promptText }] }],
+generationConfig: { responseMimeType: "application/json" }
+};
+var res = await fetch(url, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify(body)
+});
+if (!res.ok) {
+if (res.status === 401 || res.status === 403) throw { code: "invalid_key" };
+if (res.status === 429) throw { code: "rate_limited" };
+throw { code: "network_error" };
+}
+var data = await res.json();
+var candidate = data.candidates && data.candidates[0];
+if (!candidate || !candidate.content || !candidate.content.parts || !candidate.content.parts[0]) {
+throw { code: "invalid_json" };
+}
+return candidate.content.parts[0].text;
+}
+
+async function generate() {
+var draft = text.trim();
+if (draft.length < 40) { setMsg({ kind: "error", text: "Paste at least a few sentences so there is something to work with." }); return; }
+var toneNote = TONES.filter(function (t) { return t.id === tone; })[0].note.toLowerCase();
+
+var prompt = "You are an editor who helps Substack writers turn a post or draft into short pieces that start genuine conversations in comments and replies.\n\n" +
+"Return a single valid JSON object containing two top-level keys: \n" +
+"1. \"analysis\": an object with keys argument, topic, audience, emotion, style, strongest, discussion, opportunities (each being one short sentence in English).\n" +
+"2. \"variations\": an array of 5 objects corresponding to the 5 strategies in this order: hook, controversial, emotional, curiosity, community.\n\n" +
+"Output language for the variations' text: " + lang + ". Write natively in " + lang + ", using natural grammar and vocabulary.\n" +
+"Tone: " + tone + " (" + toneNote + ").\n\n" +
+"The strategies, in this order:\n" + STRATS.map(function (s, i) { return (i + 1) + ". " + s.id + " — " + s.brief; }).join("\n") + "\n\n" + RULES + styleBlock() + "\n\n" +
+VARIANT_SPEC + "\n\nDraft:\n\"\"\"\n" + draft.slice(0, 8000) + "\n\"\"\"";
+
+setMsg(null); setOut({ analysis: null, vars: {} }); setStatus("thinking"); setLastInput({ draft: draft, lang: lang, tone: tone });
+setTimeout(function () { if (resRef.current) resRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
+try {
+setStatus("writing");
+var rawText = await callGemini(prompt);
+var parsedObj = null;
+try { parsedObj = JSON.parse(rawText.replace(/```json/gi, "").replace(/```/g, "").trim()); } catch(e) {}
+
+var fin = { analysis: null, vars: {} };
+if (parsedObj) {
+if (parsedObj.analysis) fin.analysis = parsedObj.analysis;
+var arr = parsedObj.variations || parsedObj.vars || (Array.isArray(parsedObj) ? parsedObj : []);
+arr.forEach(function(item) {
+if (!item) return;
+var id = normType(item.type);
+if (id) {
+item.type = id;
+item.scores = cleanScores(item.scores);
+item.done = true;
+fin.vars[id] = item;
+}
+});
+}
+if (Object.keys(fin.vars).length === 0) {
+fin = parseGeminiResponse(rawText);
+}
+
+setOut(fin); setStatus("done");
+var got = Object.keys(fin.vars).length;
+if (got > 0) upd(function (s) { s.counters.generations += 1; s.counters.byDay[today()] = ((s.counters.byDay[today()]) || 0) + 1; return s; });
+if (got < 5) setMsg({ kind: "info", text: got + " of 5 variations came through. Generate again or use Regenerate on empty ones." });
+
+} catch (err) {
+setStatus("idle");
+setMsg({ kind: "error", text: errorCopy(err && err.code) });
+}
+}
+
+async function regenerate(id) {
+if (!lastInput) return;
+var strat = STRATS.filter(function (s) { return s.id === id; })[0];
+var prev = out.vars[id] && out.vars[id].text ? out.vars[id].text : "";
+var prompt = "You are an editor who helps Substack writers turn a post into short pieces that start genuine conversations.\n\n" +
+"Write ONE new variation using this strategy: " + strat.brief + "\n" +
+"Output language for \"text\": " + lastInput.lang + ", written natively. Tone: " + lastInput.tone + ".\n" + RULES + styleBlock() + "\n\n" +
+(out.analysis ? "Analysis of the draft: " + JSON.stringify(out.analysis) + "\n\n" : "") +
+(prev ? "The previous attempt was:\n\"\"\"\n" + prev + "\n\"\"\"\nWrite something clearly different in angle and opening.\n\n" : "") +
+"Reply with a single JSON object having keys: type, text, strategy, why, response, audience, use, scores. " + VARIANT_SPEC + " Use \"type\":\"" + id + "\".\n\n" +
+"Draft:\n\"\"\"\n" + lastInput.draft + "\n\"\"\"";
+
+setRegen(function (r) { var n = Object.assign({}, r); n[id] = true; return n; }); setMsg(null);
+try {
+var rawText = await callGemini(prompt);
+var obj = null;
+try { obj = JSON.parse(rawText.replace(/```json/gi, "").replace(/```/g, "").trim()); } catch(e) {}
+if (!obj || typeof obj.text !== "string") throw { code: "invalid_json" };
+obj.type = id; obj.scores = cleanScores(obj.scores); obj.done = true;
+setOut(function (o) { var v = Object.assign({}, o.vars); v[id] = obj; return { analysis: o.analysis, vars: v }; });
+} catch (err) { setMsg({ kind: "error", text: errorCopy(err && err.code) }); }
+setRegen(function (r) { var n = Object.assign({}, r); delete n[id]; return n; });
+}
+
+function saveVariation(id) {
+var v = out.vars[id]; if (!v || !lastInput) return;
+upd(function (s) {
+if (s.saved.some(function (x) { return x.text === v.text; })) return s;
+s.saved.unshift({ id: uid(), ts: Date.now(), type: id, label: STRATS.filter(function (x) { return x.id === id; })[0].label, text: v.text, lang: lastInput.lang, tone: lastInput.tone, source: lastInput.draft.slice(0, 160), perf: null });
+return s;
+});
+}
+function isSaved(id) { var v = out.vars[id]; return !!(v && store.saved.some(function (x) { return x.text === v.text; })); }
+function countCopy() { upd(function (s) { s.counters.copies += 1; return s; }); }
+
+async function buildProfile() {
+var s = store.style;
+if (!s.samples || s.samples.trim().length < 200) { setStyleMsg({ kind: "error", text: "Paste at least a few paragraphs of your own writing (about 200 characters or more)." }); return; }
+setBuilding(true); setStyleMsg(null);
+var prompt = "Analyze the writing samples below and describe the author's voice so future text can match it. Reply with only a JSON object: {\"summary\": one or two sentences, \"traits\": array of 4 to 6 short observations about sentence length and rhythm, vocabulary, formality, punctuation habits and typical openings, \"avoid\": array of up to 6 generic phrases that would sound out of place}. Write profile in English.\n\nSamples:\n\"\"\"\n" + s.samples.slice(0, 6000) + "\n\"\"\"";
+try {
+var rawText = await callGemini(prompt);
+var p = JSON.parse(rawText.replace(/```json/gi, "").replace(/```/g, "").trim());
+if (!p || typeof p.summary !== "string") throw { code: "invalid_json" };
+upd(function (x) { x.style.profile = { summary: p.summary, traits: Array.isArray(p.traits) ? p.traits.map(String) : [], avoid: Array.isArray(p.avoid) ? p.avoid.map(String) : [] }; return x; });
+setStyleMsg({ kind: "info", text: "Profile saved on this device. Used when 'Write in my style' is on." });
+} catch (err) { setStyleMsg({ kind: "error", text: errorCopy(err && err.code) }); }
+setBuilding(false);
+}
+
+async function exportData() {
+try {
+var blob = new Blob([JSON.stringify(store, null, 2)], { type: "application/json" });
+var url = URL.createObjectURL(blob);
+var a = document.createElement("a");
+a.href = url; a.download = "engageai-data.json";
+document.body.appendChild(a); a.click(); document.body.removeChild(a);
+setAcctMsg({ kind: "info", text: "Export saved." });
+} catch (err) { setAcctMsg({ kind: "error", text: "Couldn't save the file." }); }
+}
+function deleteAll() { lsClear(); setStore(defaultStore()); setText(""); setOut({ analysis: null, vars: {} }); setStatus("idle"); setConfirmDel(false); setAcctMsg({ kind: "info", text: "All EngageAI data on this device was deleted." }); }
+
+function Msg(m) { return m ? h("div", { className: "msg " + m.kind, role: m.kind === "error" ? "alert" : "status" }, m.text) : null; }
+
+function usageCard() {
+return h("div", { className: "card" },
+h("div", { className: "row" }, h("h3", null, "Generations today"), h("span", { className: "chip" }, "FREE PLAN PREVIEW")),
+h("div", { className: "row" }, h("b", { style: { fontVariantNumeric: "tabular-nums" } }, usedToday + " of " + FREE_DAILY), h("span", { className: "sub" }, Math.max(0, FREE_DAILY - usedToday) + " left")),
+h("div", { className: "meter", role: "presentation" }, h("i", { style: { width: Math.min(100, usedToday / FREE_DAILY * 100) + "%" } })),
+h("p", { className: "sub" }, "Counted on this device only."),
+usedToday >= FREE_DAILY ? h("button", { type: "button", className: "link", style: { alignSelf: "flex-start" }, onClick: function () { go("account"); } }, "See what Pro adds") : null);
+}
+
+function homeView() {
+var logged = store.saved.filter(function (x) { return x.perf; });
+var sum = function (k) { return logged.reduce(function (a, x) { return a + (x.perf[k] || 0); }, 0); };
+var n = logged.length, views = sum("views"), inter = sum("replies") + sum("comments") + sum("shares");
+return h("div", { className: "wrap" },
+h("section", { className: "step" },
+h("h2", { style: { fontSize: 26, lineHeight: 1.15 } }, "Turn passive readers into active participants."),
+h("p", { className: "sub" }, "Paste a post. Get five different ways to start a conversation, each with the reasoning behind it."),
+h("button", { type: "button", className: "go", onClick: function () { go("create"); } }, "Create variations")),
+usageCard(),
+h("section", { className: "step" }, h("h2", null, "Your activity"),
+h("div", { className: "stats" },
+h("div", { className: "stat" }, h("b", null, store.counters.generations), h("span", null, "Posts generated")),
+h("div", { className: "stat" }, h("b", null, store.counters.copies), h("span", null, "Variations copied")),
+h("div", { className: "stat" }, h("b", null, store.saved.length), h("span", null, "Saved")))),
+h("section", { className: "step" }, h("h2", null, "Results you logged"),
+n === 0
+? h("div", { className: "empty" }, "Nothing yet. After you publish a saved variation, open it in History and enter its replies, comments and shares.")
+: h("div", { className: "stats four" },
+h("div", { className: "stat" }, h("b", null, (sum("replies") / n).toFixed(1)), h("span", null, "Replies per post")),
+h("div", { className: "stat" }, h("b", null, (sum("comments") / n).toFixed(1)), h("span", null, "Comments per post")),
+h("div", { className: "stat" }, h("b", null, (sum("shares") / n).toFixed(1)), h("span", null, "Shares per post")),
+h("div", { className: "stat" }, h("b", null, views > 0 ? (inter / views * 100).toFixed(1) + "%" : "–"), h("span", null, views > 0 ? "Engagement rate" : "Add views for a rate")),
+h("div", { className: "stat" }, h("b", null, sum("followers")), h("span", null, "New followers")),
+h("div", { className: "stat" }, h("b", null, sum("returning")), h("span", null, "Returning readers")))));
+}
+
+function createView() {
+var anyOut = running || status === "done" || Object.keys(out.vars).length > 0 || out.analysis;
+return h("div", { className: "wrap" },
+h("section", { className: "step" },
+h("div", { className: "step-head" }, h("h2", null, "Your post"), h("button", { type: "button", className: "link", onClick: function () { setText(EXAMPLE); } }, "Use an example")),
+h("div", { className: "field" },
+h("textarea", { id: "post", value: text, onChange: function (e) { setText(e.target.value); }, placeholder: "Paste a post, a section, or a rough draft.", "aria-label": "Your post" }),
+h("div", { className: "field-foot" }, h("span", null, words(text) + " words"), text ? h("button", { type: "button", className: "link", onClick: function () { setText(""); } }, "Clear") : null))),
+h("section", { className: "step" }, h("h2", null, "Output language"),
+h("div", { className: "pills", role: "radiogroup", "aria-label": "Output language" }, LANGS.map(function (l) {
+return h("button", { key: l, type: "button", role: "radio", "aria-checked": lang === l, className: "pill", onClick: function () { upd(function (s) { s.settings.lang = l; return s; }); } }, l); }))),
+h("section", { className: "step" }, h("h2", null, "Tone"),
+h("div", { className: "tones", role: "radiogroup", "aria-label": "Tone" }, TONES.map(function (t) {
+return h("button", { key: t.id, type: "button", role: "radio", "aria-checked": tone === t.id, className: "tone", onClick: function () { upd(function (s) { s.settings.tone = t.id; return s; }); } }, h("b", null, t.id), h("span", null, t.note)); }))),
+h("section", { className: "step" },
+hasStyle ? h("label", { className: "check" }, h("input", { type: "checkbox", id: "usestyle", checked: store.settings.useStyle, onChange: function (e) { var c = e.target.checked; upd(function (s) { s.settings.useStyle = c; return s; }); } }), "Write in my style") : null,
+running
+? h("button", { type: "button", className: "go stop", onClick: function () { setStatus("idle"); } }, h("span", { className: "spin", "aria-hidden": "true" }), "Stop")
+: h("button", { type: "button", className: "go", onClick: generate }, status === "done" ? "Generate again" : "Generate 5 variations"),
+Msg(msg),
+h("p", { className: "sub" }, usedToday + " of " + FREE_DAILY + " free generations used today.")),
+h("section", { className: "results", ref: resRef, "aria-live": "polite" },
+anyOut ? [
+h("h2", { key: "h" }, "Your variations"),
+h("div", { key: "a", className: "card" },
+h("h3", null, "Post analysis"),
+out.analysis
+? h("dl", null, [["argument", "Main argument"], ["topic", "Topic and context"], ["audience", "Likely audience"], ["emotion", "Emotional tone"], ["style", "Writing style"], ["strongest", "Strongest ideas"], ["discussion", "Discussion potential"], ["opportunities", "Reader interaction"]].map(function (r) {
+return out.analysis[r[0]] ? h("div", { key: r[0] }, h("dt", null, r[1]), h("dd", null, String(out.analysis[r[0]]))) : null; }))
+: running ? h("div", { className: "skel", "aria-hidden": "true" }, h("i"), h("i"), h("i")) : h("p", { className: "sub" }, "No analysis came back this time."))
+].concat(STRATS.map(function (s) {
+return h(VariationCard, { key: s.id, meta: s, v: out.vars[s.id], running: running, busy: !!regen[s.id], saved: isSaved(s.id), canRegen: !!lastInput,
+onCopied: countCopy, onSave: function () { saveVariation(s.id); }, onRegen: function () { regenerate(s.id); } }); }))
+: [h("h2", { key: "h" }, "What you get"), h("div", { key: "l", className: "plans" }, STRATS.map(function (s) { return h("div", { key: s.id, className: "plan" }, h("h3", null, s.label), h("p", { className: "sub" }, s.hint)); }))]));
+}
+
+function historyView() {
+return h("div", { className: "wrap" },
+h("section", { className: "step" }, h("h2", null, "Saved variations"),
+h("p", { className: "sub" }, "Saved on this device. After you publish one, log how it did."),
+store.saved.length === 0 ? h("div", { className: "empty" }, "No saved variations yet. Press Save on any result in Create.") : null),
+store.saved.map(function (it) {
+var open = !!perfOpen[it.id], p = it.perf || {};
+function setP(k, val) { upd(function (s) { var x = s.saved.filter(function (y) { return y.id === it.id; })[0]; if (x) { x.perf = x.perf || {}; x.perf[k] = num(val); } return s; }); }
+return h("article", { className: "item", key: it.id },
+h("div", { className: "row" }, h("span", { className: "chip" }, it.label.toUpperCase()), h("span", { className: "sub" }, new Date(it.ts).toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " · " + it.lang + " · " + it.tone)),
+h("p", { className: "card-body" }, it.text),
+h("p", { className: "src" }, "From: " + it.source + (it.source.length >= 160 ? "…" : "")),
+h("div", { className: "actions" },
+h(CopyButton, { text: it.text, label: "Copy saved variation", onCopied: countCopy }),
+h("button", { type: "button", className: "btn", onClick: function () { setPerfOpen(function (o) { var n = Object.assign({}, o); n[it.id] = !open; return n; }); } }, open ? "Hide results" : (it.perf ? "Edit results" : "Log results")),
+h("button", { type: "button", className: "btn danger", onClick: function () { upd(function (s) { s.saved = s.saved.filter(function (y) { return y.id !== it.id; }); return s; }); } }, "Delete")),
+open ? h("div", { className: "perf" }, [["views", "Views"], ["replies", "Replies"], ["comments", "Comments"], ["shares", "Shares"], ["followers", "New followers"], ["returning", "Returning readers"]].map(function (f) {
+return h("label", { key: f[0] }, f[1], h("input", { type: "number", inputMode: "numeric", min: 0, id: it.id + f[0], value: p[f[0]] == null ? "" : p[f[0]], placeholder: "0", onChange: function (e) { setP(f[0], e.target.value); } })); })) : null);
+}));
+}
+
+function styleView() {
+var s = store.style;
+return h("div", { className: "wrap" },
+h("section", { className: "step" },
+h("div", { className: "row" }, h("h2", null, "Your writing style"), h("span", { className: "chip" }, "PRO PLAN FEATURE")),
+h("p", { className: "sub" }, "Paste your own writing so variations sound like you. Samples stay on this device.")),
+h("section", { className: "step" }, h("h3", null, "Writing samples"),
+h("div", { className: "field" },
+h("textarea", { id: "samples", className: "short", value: s.samples, placeholder: "Paste a few paragraphs from your own posts.", "aria-label": "Writing samples", onChange: function (e) { var v = e.target.value; upd(function (x) { x.style.samples = v; return x; }); } }),
+h("div", { className: "field-foot" }, h("span", null, words(s.samples) + " words"), s.samples ? h("button", { type: "button", className: "link", onClick: function () { upd(function (x) { x.style.samples = ""; return x; }); } }, "Clear") : null))),
+h("section", { className: "step" }, h("h3", null, "Words and phrases to avoid"),
+h("input", { type: "text", id: "avoid", value: s.avoid, placeholder: "for example: game-changer, unlock, delve", "aria-label": "Words to avoid", onChange: function (e) { var v = e.target.value; upd(function (x) { x.style.avoid = v; return x; }); } })),
+h("section", { className: "step" },
+h("button", { type: "button", className: "go", disabled: building, onClick: buildProfile }, building ? [h("span", { key: "s", className: "spin", "aria-hidden": "true" }), "Analyzing your writing"] : s.profile ? "Rebuild style profile" : "Build my style profile"),
+Msg(styleMsg)),
+s.profile ? h("section", { className: "card" },
+h("h3", null, "Your style profile"), h("p", null, s.profile.summary),
+h("dl", null, h("div", null, h("dt", null, "Traits"), h("dd", null, (s.profile.traits || []).join(" · "))), (s.profile.avoid || []).length ? h("div", null, h("dt", null, "Phrases to steer clear of"), h("dd", null, s.profile.avoid.join(" · "))) : null),
+h("button", { type: "button", className: "btn danger", onClick: function () { upd(function (x) { x.style.profile = null; return x; }); } }, "Remove profile")) : null);
+}
+
+function accountView() {
+var s = store.settings;
+return h("div", { className: "wrap" },
+h("section", { className: "step" }, h("h2", null, "API Settings"),
+h("div", { className: "card" },
+h("h3", null, "Gemini API Key"),
+h("p", { className: "sub" }, "Configure your Gemini API key to run EngageAI anywhere."),
+h("button", { type: "button", className: "btn primary", onClick: function() { setShowSettingsModal(true); } }, "Configure API Key"))),
+h("section", { className: "step" }, h("h2", null, "Plans"),
+h("div", { className: "plans" },
+h("div", { className: "plan current" }, h("div", { className: "row" }, h("h3", null, "Free"), h("span", { className: "chip" }, "CURRENT")), h("div", { className: "price" }, "$0 ", h("small", null, "per month")),
+h("ul", null, ["3 generations per day", "5 variations per generation", "All 7 languages", "Engagement strategies and scores", "Copy and save results", "Basic content analysis"].map(function (x) { return h("li", { key: x }, x); }))),
+h("div", { className: "plan" }, h("div", { className: "row" }, h("h3", null, "Pro"), h("span", { className: "chip" }, "NOT YET AVAILABLE")), h("div", { className: "price" }, "$9 ", h("small", null, "per month, proposed")),
+h("ul", null, ["100 generations per month", "Advanced audience analysis", "Personalized writing style", "Advanced engagement optimization", "Saved generation history", "Priority generation", "Performance analytics"].map(function (x) { return h("li", { key: x }, x); })))),
+h("p", { className: "sub" }, "Pricing is a preview and may change.")),
+h("section", { className: "step" }, h("h2", null, "Settings"),
+h("div", { className: "two" },
+h("label", { className: "sub" }, "Default language", h("select", { id: "dlang", value: s.lang, onChange: function (e) { var v = e.target.value; upd(function (x) { x.settings.lang = v; return x; }); } }, LANGS.map(function (l) { return h("option", { key: l, value: l }, l); }))),
+h("label", { className: "sub" }, "Default tone", h("select", { id: "dtone", value: s.tone, onChange: function (e) { var v = e.target.value; upd(function (x) { x.settings.tone = v; return x; }); } }, TONES.map(function (t) { return h("option", { key: t.id, value: t.id }, t.id); })))),
+h("div", { className: "card" }, h("h3", null, "Your data"),
+h("p", { className: "sub" }, "Drafts, saved variations, your style and counters live in this browser only."),
+h("div", { className: "actions" },
+canDownload ? h("button", { type: "button", className: "btn", onClick: exportData }, "Export my data") : null,
+!confirmDel ? h("button", { type: "button", className: "btn danger", onClick: function () { setConfirmDel(true); } }, "Delete all my data") : null),
+confirmDel ? h("div", { className: "msg error" }, h("p", null, "Delete everything saved on this device? This can't be undone."),
+h("div", { className: "actions", style: { marginTop: 10 } }, h("button", { type: "button", className: "btn danger", onClick: deleteAll }, "Yes, delete"), h("button", { type: "button", className: "btn", onClick: function () { setConfirmDel(false); } }, "Cancel"))) : null,
+Msg(acctMsg))));
+}
+
+var body = view === "create" ? createView() : view === "history" ? historyView() : view === "style" ? styleView() : view === "account" ? accountView() : homeView();
+return h("div", null,
+showSettingsModal ? h(SettingsModal, { onClose: function() { setShowSettingsModal(false); }, onSave: function() { setShowSettingsModal(false); } }) : null,
+h("div", { className: "wrap", style: { marginBottom: 26 } },
+h("header", null,
+h("div", { className: "header-left" },
+h("div", { className: "mark", "aria-hidden": "true" }, h("svg", { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none" },
+h("path", { d: "M4 6.5A3.5 3.5 0 0 1 7.5 3h9A3.5 3.5 0 0 1 20 6.5v6a3.5 3.5 0 0 1-3.5 3.5H11l-4.2 3.6c-.6.5-1.5.1-1.5-.7V16A3.5 3.5 0 0 1 4 12.5v-6Z", fill: "#b79cff" }),
+h("circle", { cx: 9, cy: 9.7, r: 1.1, fill: "#161221" }), h("circle", { cx: 12.5, cy: 9.7, r: 1.1, fill: "#161221" }), h("circle", { cx: 16, cy: 9.7, r: 1.1, fill: "#161221" }))),
+h("div", null, h("h1", null, "EngageAI"), h("p", { className: "tag" }, "Turn a post into a conversation."))
+),
+h("button", { type: "button", className: "btn", onClick: function() { setShowSettingsModal(true); } }, "API Key")
+)),
+body,
+h("nav", { className: "nav", "aria-label": "Main" }, h("div", { className: "nav-in" }, VIEWS.map(function (v) {
+return h("button", { key: v.id, type: "button", "aria-current": view === v.id ? "page" : undefined, onClick: function () { go(v.id); } }, icon(v.d), v.label); }))));
+
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+})();
+</script>
+
+</body></html>
